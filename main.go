@@ -29,6 +29,8 @@ func main() {
 		oops("no base URL provided. put it in the SHORTY_BASE_URL env variable. (e.g., https://example.com)")
 	}
 
+	adminKey := os.Getenv("SHORTY_ADMIN_KEY")
+
 	flag.Parse()
 
 	longURL := flag.Arg(0)
@@ -49,6 +51,10 @@ func main() {
 
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
+	if adminKey != "" {
+		req.Header.Add("Authorization", "Bearer "+adminKey)
+	}
+
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		oops(err)
@@ -64,7 +70,7 @@ func main() {
 	}
 
 	if resp.Error != nil {
-		oops(*resp.Error)
+		oops(*resp.Error + ", you may need to provide an Admin Key. Put it in the SHORTY_ADMIN_KEY environment variable.")
 	}
 
 	fmt.Printf(base+"/%s\n", resp.Result.Suffix)
