@@ -29,6 +29,8 @@ func main() {
 		oops("no base URL provided. put it in the SHORTY_BASE_URL env variable. (e.g., https://example.com)")
 	}
 
+	key := os.Getenv("SHORTY_ADMIN_KEY")
+
 	flag.Parse()
 
 	longURL := flag.Arg(0)
@@ -48,6 +50,10 @@ func main() {
 	}
 
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	if key != "" {
+		req.Header.Add("Authorization", "Bearer "+key)
+	}
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
